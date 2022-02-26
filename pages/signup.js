@@ -15,8 +15,8 @@ import CommonInput from "../components/Common/CommonInputs";
 import ImageDrop from "../components/Common/ImageDrop";
 import axios from "axios";
 import baseUrl from "../utils/baseUrl";
-import { registerUser } from "../api/api/auth";
-import uplaodPic from "../api/api/uploadPicToCloudinary";
+import { registerUser } from "../api/auth";
+import uplaodPic from "../api/uploadPicToCloudinary";
 
 export default function Signup() {
   const [user, setUser] = useState({

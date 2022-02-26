@@ -4,7 +4,7 @@ import {
   FooterMessage,
 } from "../components/Common/WelcomeMessage";
 import { Form, Button, Message, Segment } from "semantic-ui-react";
-import { loginUser } from "../api/api/auth";
+import { loginUser } from "../api/auth";
 export default function Login() {
   const [user, setUser] = useState({
     email: "",
