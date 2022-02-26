@@ -8,12 +8,14 @@ const handle = nextApp.getRequestHandler();
 require("dotenv").config({ path: "./config.env" });
 const connectDb = require("./utilsServer/connectDb");
 const PORT = process.env.PORT || 3000;
+const router = require("./api");
 app.use(express.json());
 connectDb();
 
 nextApp.prepare().then(() => {
   // app.use("/api/login", require("./api/login"));
-  app.use("/api/signup", require("./api/signup"));
+  app.use("/api", router);
+
   app.all("*", (req, res) => handle(req, res));
 
   server.listen(PORT, (err) => {

@@ -13,6 +13,11 @@ import {
 } from "../components/Common/WelcomeMessage";
 import CommonInput from "../components/Common/CommonInputs";
 import ImageDrop from "../components/Common/ImageDrop";
+import axios from "axios";
+import baseUrl from "../utils/baseUrl";
+import { registerUser } from "../api/api/auth";
+import uplaodPic from "../api/api/uploadPicToCloudinary";
+
 export default function Signup() {
   const [user, setUser] = useState({
     name: "",
@@ -39,12 +44,24 @@ export default function Signup() {
   const [mediaPreview, setMediaPreview] = useState(null);
   const [highlighted, setHighleghted] = useState(false);
   const inputRef = useRef();
-  const handleSubmit = (e) => e.preventDefault();
+  let cancel;
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    let profilePicUrl;
+    // profilePicUrl = await uplaodPic();
+
+    // if (media !== null && !profilePicUrl) {
+    //   setFormloading(false);
+    //   return setErrorMsg("Error Uploading Image");
+    // }
+    user.username = username;
+    await registerUser(user, profilePicUrl, setErrorMsg, setFormloading);
+  };
   const handleChange = (e) => {
     e.preventDefault();
     const { name, value, files } = e.target;
 
-    if(name == 'media'){
+    if (name == "media") {
       setMedia(files[0]);
       setMediaPreview(URL.createObjectURL(files[0]));
     }
@@ -60,6 +77,30 @@ export default function Signup() {
     );
     isUser ? setSubmitDisabled(false) : setSubmitDisabled(true);
   }, [user]);
+
+  const checkUsername = async () => {
+    setUsernameLoading(true);
+    try {
+      // cancel && cancel();
+      // const CancelToken = axios.CancelToken();
+
+      // cancelToken: new CancelToken((canceler) => (cancel = canceler)),
+
+      const res = await axios.get(`${baseUrl}/api/${username}`);
+      console.log(res);
+      if (res.data === "Available") {
+        setUsernmaeAvailable(true);
+        setUser((prev) => ({ ...prev, username }));
+      }
+    } catch (err) {
+      setErrorMsg("Username Not Available");
+    }
+
+    setUsernameLoading(false);
+  };
+  useEffect(() => {
+    username === "" ? setUsernmaeAvailable(false) : checkUsername();
+  }, [username]);
   return (
     <>
       <HeaderMessage />
@@ -134,8 +175,10 @@ export default function Signup() {
             value={username}
             onChange={(e) => {
               setUsername(e.target.value);
+              console.log(e.target.value);
               if (regexUserName.test(e.target.value)) {
                 setUsernmaeAvailable(true);
+                setErrorMsg(false)
               } else {
                 setUsernmaeAvailable(false);
               }

@@ -3,15 +3,8 @@ import {
   HeaderMessage,
   FooterMessage,
 } from "../components/Common/WelcomeMessage";
-import {
-  Form,
-  Button,
-  Message,
-  Segment,
-  TextArea,
-  Divider,
-} from "semantic-ui-react";
-
+import { Form, Button, Message, Segment } from "semantic-ui-react";
+import { loginUser } from "../api/api/auth";
 export default function Login() {
   const [user, setUser] = useState({
     email: "",
@@ -22,23 +15,30 @@ export default function Login() {
   const [showPassword, setShowPassword] = useState(false);
   const [errorMsg, setErrorMsg] = useState(null);
   const [formLoading, setFormloading] = useState(false);
- 
+
   const [usernameAvailable, setUsernmaeAvailable] = useState(false);
- 
+
   const [submitDisabled, setSubmitDisabled] = useState(false);
-  
- 
-  const handleSubmit = (e) => e.preventDefault();
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    await loginUser(user, setErrorMsg, setFormloading);
+  };
   const handleChange = (e) => {
     e.preventDefault();
     const { name, value } = e.target;
 
-   
     setUser((values) => ({
       ...values,
       [name]: value,
     }));
   };
+  useEffect(() => {
+    const isUser = Object.values({ email, password }).every((item) =>
+      Boolean(item)
+    );
+    isUser ? setSubmitDisabled(false) : setSubmitDisabled(true);
+  }, [user]);
 
   return (
     <>
@@ -49,7 +49,7 @@ export default function Login() {
         onSubmit={handleSubmit}
       >
         <Segment>
-        <Form.Input
+          <Form.Input
             required
             label="Email"
             placeholder="Email"
@@ -82,7 +82,7 @@ export default function Login() {
             content="signin"
             type="submit"
             color="orange"
-            disabled={submitDisabled || !usernameAvailable}
+            disabled={submitDisabled }
           />
         </Segment>
       </Form>
